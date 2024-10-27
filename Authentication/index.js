@@ -9,6 +9,8 @@ const gernerateTokens = ()=>{ // token generator Function
 
 const users = [];   // Array for Storing username & password
 
+console.log(users);
+
 app.post("/signup",(req,res)=>{  // HTTP
     const username = req.body.username;  // Use middleware for displaying data in body from postman 
     const password = req.body.password;
@@ -48,7 +50,23 @@ app.post("/signin",(req,res)=>{
             message:"Invalid username and password"
         })
     }
-    
+    console.log(users);
+})
+app.get("/me",(req,res)=>{
+    const token = req.headers.token;
+    const user = users.find((user)=>user.token == token);
+    if(user){
+        res.json({
+            message:"Successful"
+        })
+    }
+    else{
+        res.status(404).send({
+            message:"Unauthorized"
+        })
+    }
+
+
 })
 
 app.listen(3000,()=>{

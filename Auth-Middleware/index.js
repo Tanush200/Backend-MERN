@@ -53,7 +53,25 @@ app.post("/signin",(req,res)=>{
     }
     console.log(users);
 })
-app.get("/me",(req, res) => {
+
+function auth(req,res,next){
+    const token = req.headers.token;
+    const decodedData = jwt.verify(token,JWT_SECRET);
+
+    if(decodedData.username){
+        req.username = decodedData.username
+        next();
+
+    }
+    else{
+        res.status(404).send({
+            message:"Yor are not allowed"
+        })
+    }
+
+}
+
+app.get("/me",auth,(req, res) => {
     const token = req.headers.token;
 
     try {
@@ -62,7 +80,7 @@ app.get("/me",(req, res) => {
         const username = decodedInformation.username;
 
        
-        const user = users.find((user) => user.username === username); //5. Find the user by username
+        const user = users.find((user) => user.username === req.username); //5. Find the user by username
         if (user) {
             res.json({
                 message: "Successful",
@@ -79,6 +97,18 @@ app.get("/me",(req, res) => {
         });
     }
 });
+
+app.get("/todo",auth,(req,res)=>{
+
+})
+
+app.post("/todo",auth,(req,res)=>{
+    
+})
+
+app.delete("/todo",auth,(req,res)=>{
+    
+})
 
 app.listen(3000,()=>{
     console.log("successful");  

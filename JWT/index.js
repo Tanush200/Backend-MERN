@@ -1,34 +1,35 @@
 const express = require("express");
+const jwt = require("jsonwebtoken")  // 1.require the library
 const app = express();
-
-app.use(express.json());  // Middleware
+const JWT_SECRET = "npmjwt"  // 2. Create a secret variable 
+app.use(express.json());  
 
  
 
-const users = [];   // Array for Storing username & password
+const users = [];   
 
 console.log(users);
 
-app.post("/signup",(req,res)=>{  // HTTP
-    const username = req.body.username;  // Use middleware for displaying data in body from postman 
+app.post("/signup",(req,res)=>{  
+    const username = req.body.username; 
     const password = req.body.password;
 
 users.push({
-    username:username,   // push username & password in users Array
+    username:username,  
     password:password
 })
 res.json({
-    message:"You are signed in"  // After signup...Display this message
+    message:"You are signed in"   
 })
 
 })
 
 app.post("/signin",(req,res)=>{
-    const username = req.body.username;  // Use middleware for displaying data in body from postman After signup
+    const username = req.body.username;   
     const password = req.body.password;
 
     const foundUser = users.find(function(u){
-        if(u.username == username && u.password == password){  // If same username & password found return true
+        if(u.username == username && u.password == password){   
             return true;
         }
         else{
@@ -36,8 +37,10 @@ app.post("/signin",(req,res)=>{
         }
     })
     if(foundUser){
-        const token = gernerateTokens();  // If find generate a token 
-        foundUser.token = token  // Store also the token in usersArray
+
+        const token = jwt.sign({ // 3. Convert username into jwt
+            username:username  
+        },JWT_SECRET);
 
         res.json({
              token:token
@@ -50,22 +53,32 @@ app.post("/signin",(req,res)=>{
     }
     console.log(users);
 })
-app.get("/me",(req,res)=>{
+app.get("/me", (req, res) => {
     const token = req.headers.token;
-    const user = users.find((user)=>user.token == token);
-    if(user){
-        res.json({
-            message:"Successful"
-        })
-    }
-    else{
-        res.status(404).send({
-            message:"Unauthorized"
-        })
-    }
 
+    try {
+        
+        const decodedInformation = jwt.verify(token, JWT_SECRET); // 4. Verify the token and decode the information
+        const username = decodedInformation.username;
 
-})
+       
+        const user = users.find((user) => user.username === username); //5. Find the user by username
+        if (user) {
+            res.json({
+                message: "Successful",
+                user: user
+            });
+        } else {
+            res.status(404).send({
+                message: "Unauthorized"
+            });
+        }
+    } catch (error) {
+        res.status(400).send({
+            message: "Invalid token"
+        });
+    }
+});
 
 app.listen(3000,()=>{
     console.log("successful");  

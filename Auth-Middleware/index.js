@@ -98,18 +98,6 @@ app.get("/me",auth,(req, res) => {
     }
 });
 
-app.get("/todo",auth,(req,res)=>{
-
-})
-
-app.post("/todo",auth,(req,res)=>{
-    
-})
-
-app.delete("/todo",auth,(req,res)=>{
-    
-})
-
 app.listen(3000,()=>{
     console.log("successful");  
 })

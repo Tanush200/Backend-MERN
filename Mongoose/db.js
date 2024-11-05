@@ -1,9 +1,9 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-const ObjectId = mongoose.ObjectId
+const mongoose = require("mongoose");  // 1.require mongoose through npm i mongoose
+const Schema = mongoose.Schema; // 2.Define schema
+const ObjectId = mongoose.ObjectId // 3. define ObjectId
 
-const Users = new Schema({
-    name:String,
+const Users = new Schema({       // 4. Define schemas 
+    name:String,  
     email: {type:String,unique:true},
     password : String
 })
@@ -15,7 +15,7 @@ const Todos = new Schema({
 })
 
 
-const UserModel = mongoose.model('users',Users);
+const UserModel = mongoose.model('users',Users);  //(collection Name , Schema) by using mongoose.model
 const TodosModel = mongoose.model('todos',Todos);
 
 

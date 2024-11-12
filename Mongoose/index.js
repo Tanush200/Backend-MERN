@@ -8,8 +8,11 @@ const JWT_SECRET = "kfjqiofqefjiqe";
 
 // Mongoose
 const { default: mongoose } = require("mongoose");
-mongoose.connect("mongodb+srv://sahatanush511:RucG6K6DPITn09qf@cluster0.q08bd.mongodb.net/tode-database")
+mongoose.connect("mongodb://localhost:27017/hashPassword")
 const { UserModel , TodosModel } = require("./db")
+
+// Bcrypt
+const bcrypt = require("bcrypt");  // 1.import bcrypt library.....
 
 // Middleware
 app.use(express.json());
@@ -21,10 +24,12 @@ app.post("/signup",async function(req,res){
     const email = req.body.email;
     const password = req.body.password;
 
+    const hashedPassword =await bcrypt.hash(password,5)  // 2.hashing password
+
    await UserModel.create({       
         name:name,
         email:email,
-        password:password
+        password:hashedPassword
     })
 
     res.json({
@@ -41,7 +46,16 @@ app.post("/login",async function(req,res){
         email:email,
         password:password
     })
-    if(user){
+
+    if(!response){
+        res.status(404).json({
+            message:"No Response"
+        })
+    }
+     
+    const passwordMatched = bcrypt.compare(password,response.password); // 3.Compare the hashedPassword
+
+    if(passwordMatched){
         const token = jwt.sign({
             id:user._id.toString()  // Because That id is a ObjectId..Convert to string
         },JWT_SECRET)

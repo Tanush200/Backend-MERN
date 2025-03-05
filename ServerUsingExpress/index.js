@@ -15,3 +15,9 @@ app.listen(3000,()=>{
     console.log("Successful");
 
 });
+
+app.get("/",(req,res)=>{
+    res.json({
+        
+    })
+})
